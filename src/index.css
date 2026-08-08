@@ -1,0 +1,533 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --animate-fade-in: fade-in 0.2s ease-out;
+  --animate-slide-up: slide-up 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-scale-in: scale-in 0.15s ease-out;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+/*
+ * ============================================================
+ *  SEMANTIC TOKEN LAYER
+ *  Utilities generated from these reference raw --gym-* vars,
+ *  so swapping mode (light/dark) or theme preset (data-theme)
+ *  re-themes the entire app instantly.
+ * ============================================================
+ */
+@theme inline {
+  /* Primary / accent scales (driven by hue+saturation per preset) */
+  --color-brand-50: var(--gym-brand-50);
+  --color-brand-100: var(--gym-brand-100);
+  --color-brand-200: var(--gym-brand-200);
+  --color-brand-300: var(--gym-brand-300);
+  --color-brand-400: var(--gym-brand-400);
+  --color-brand-500: var(--gym-brand-500);
+  --color-brand-600: var(--gym-brand-600);
+  --color-brand-700: var(--gym-brand-700);
+  --color-brand-800: var(--gym-brand-800);
+  --color-brand-900: var(--gym-brand-900);
+  --color-brand-950: var(--gym-brand-950);
+
+  --color-accent-50: var(--gym-accent-50);
+  --color-accent-100: var(--gym-accent-100);
+  --color-accent-200: var(--gym-accent-200);
+  --color-accent-300: var(--gym-accent-300);
+  --color-accent-400: var(--gym-accent-400);
+  --color-accent-500: var(--gym-accent-500);
+  --color-accent-600: var(--gym-accent-600);
+  --color-accent-700: var(--gym-accent-700);
+  --color-accent-800: var(--gym-accent-800);
+  --color-accent-900: var(--gym-accent-900);
+  --color-accent-950: var(--gym-accent-950);
+
+  --color-grad-start: var(--gym-grad-start);
+  --color-grad-end: var(--gym-grad-end);
+
+  /* Surfaces & text */
+  --color-background: var(--gym-background);
+  --color-surface: var(--gym-surface);
+  --color-surface-2: var(--gym-surface-2);
+  --color-surface-3: var(--gym-surface-3);
+  --color-foreground: var(--gym-foreground);
+  --color-muted: var(--gym-muted);
+  --color-muted-foreground: var(--gym-muted-foreground);
+  --color-border: var(--gym-border);
+  --color-border-subtle: var(--gym-border-subtle);
+  --color-overlay: var(--gym-overlay);
+
+  /* App shell */
+  --color-sidebar: var(--gym-sidebar);
+  --color-sidebar-foreground: var(--gym-sidebar-foreground);
+  --color-sidebar-muted: var(--gym-sidebar-muted);
+  --color-sidebar-accent: var(--gym-sidebar-accent);
+  --color-header: var(--gym-header);
+
+  /* Status */
+  --color-success-50: var(--gym-success-50);
+  --color-success-100: var(--gym-success-100);
+  --color-success-200: var(--gym-success-200);
+  --color-success-500: var(--gym-success-500);
+  --color-success-600: var(--gym-success-600);
+  --color-success-700: var(--gym-success-700);
+
+  --color-warning-50: var(--gym-warning-50);
+  --color-warning-100: var(--gym-warning-100);
+  --color-warning-200: var(--gym-warning-200);
+  --color-warning-500: var(--gym-warning-500);
+  --color-warning-600: var(--gym-warning-600);
+  --color-warning-700: var(--gym-warning-700);
+
+  --color-danger-50: var(--gym-danger-50);
+  --color-danger-100: var(--gym-danger-100);
+  --color-danger-200: var(--gym-danger-200);
+  --color-danger-500: var(--gym-danger-500);
+  --color-danger-600: var(--gym-danger-600);
+  --color-danger-700: var(--gym-danger-700);
+
+  --color-info-50: var(--gym-info-50);
+  --color-info-100: var(--gym-info-100);
+  --color-info-200: var(--gym-info-200);
+  --color-info-500: var(--gym-info-500);
+  --color-info-600: var(--gym-info-600);
+  --color-info-700: var(--gym-info-700);
+
+  /* Elevation & radius */
+  --shadow-card: var(--gym-shadow-card);
+  --shadow-elevated: var(--gym-shadow-elevated);
+  --shadow-popover: var(--gym-shadow-popover);
+  --radius-card: var(--gym-radius-card);
+  --radius-control: var(--gym-radius-control);
+}
+
+/*
+ * ============================================================
+ *  RAW TOKENS — LIGHT MODE (default)
+ * ============================================================
+ */
+:root {
+  color-scheme: light;
+
+  /* Brand scale is derived from hue/saturation so theme presets are tiny. */
+  --gym-brand-h: 239;
+  --gym-brand-s: 84%;
+  --gym-brand-s-deep: 74%;
+  --gym-accent-h: 262;
+  --gym-accent-s: 83%;
+  --gym-accent-s-deep: 73%;
+
+  --gym-brand-50: hsl(var(--gym-brand-h) var(--gym-brand-s) 96%);
+  --gym-brand-100: hsl(var(--gym-brand-h) var(--gym-brand-s) 92%);
+  --gym-brand-200: hsl(var(--gym-brand-h) var(--gym-brand-s) 87%);
+  --gym-brand-300: hsl(var(--gym-brand-h) var(--gym-brand-s) 79%);
+  --gym-brand-400: hsl(var(--gym-brand-h) var(--gym-brand-s) 68%);
+  --gym-brand-500: hsl(var(--gym-brand-h) var(--gym-brand-s) 58%);
+  --gym-brand-600: hsl(var(--gym-brand-h) var(--gym-brand-s-deep) 50%);
+  --gym-brand-700: hsl(var(--gym-brand-h) var(--gym-brand-s-deep) 43%);
+  --gym-brand-800: hsl(var(--gym-brand-h) var(--gym-brand-s-deep) 37%);
+  --gym-brand-900: hsl(var(--gym-brand-h) var(--gym-brand-s-deep) 31%);
+  --gym-brand-950: hsl(var(--gym-brand-h) var(--gym-brand-s-deep) 25%);
+
+  --gym-accent-50: hsl(var(--gym-accent-h) var(--gym-accent-s) 96%);
+  --gym-accent-100: hsl(var(--gym-accent-h) var(--gym-accent-s) 92%);
+  --gym-accent-200: hsl(var(--gym-accent-h) var(--gym-accent-s) 87%);
+  --gym-accent-300: hsl(var(--gym-accent-h) var(--gym-accent-s) 79%);
+  --gym-accent-400: hsl(var(--gym-accent-h) var(--gym-accent-s) 68%);
+  --gym-accent-500: hsl(var(--gym-accent-h) var(--gym-accent-s) 58%);
+  --gym-accent-600: hsl(var(--gym-accent-h) var(--gym-accent-s-deep) 50%);
+  --gym-accent-700: hsl(var(--gym-accent-h) var(--gym-accent-s-deep) 43%);
+  --gym-accent-800: hsl(var(--gym-accent-h) var(--gym-accent-s-deep) 37%);
+  --gym-accent-900: hsl(var(--gym-accent-h) var(--gym-accent-s-deep) 31%);
+  --gym-accent-950: hsl(var(--gym-accent-h) var(--gym-accent-s-deep) 25%);
+
+  --gym-grad-start: hsl(var(--gym-brand-h) var(--gym-brand-s-deep) 50%);
+  --gym-grad-end: hsl(var(--gym-accent-h) var(--gym-accent-s-deep) 50%);
+
+  /* Surfaces */
+  --gym-background: hsl(210 24% 96%);
+  --gym-surface: hsl(0 0% 100%);
+  --gym-surface-2: hsl(210 24% 98%);
+  --gym-surface-3: hsl(214 24% 94%);
+  --gym-foreground: hsl(222 47% 11%);
+  --gym-muted: hsl(215 20% 42%);
+  --gym-muted-foreground: hsl(215 16% 44%);
+  --gym-border: hsl(214 32% 91%);
+  --gym-border-subtle: hsl(214 32% 95%);
+  --gym-overlay: hsl(222 47% 11% / 0.55);
+
+  /* Shell */
+  --gym-sidebar: hsl(222 47% 9%);
+  --gym-sidebar-foreground: hsl(210 20% 98%);
+  --gym-sidebar-muted: hsl(215 20% 62%);
+  --gym-sidebar-accent: hsl(var(--gym-brand-h) var(--gym-brand-s) 55%);
+  --gym-header: hsl(0 0% 100% / 0.82);
+
+  /* Status */
+  --gym-success-h: 158;
+  --gym-success-s: 64%;
+  --gym-success-50: hsl(var(--gym-success-h) var(--gym-success-s) 94%);
+  --gym-success-100: hsl(var(--gym-success-h) var(--gym-success-s) 88%);
+  --gym-success-200: hsl(var(--gym-success-h) var(--gym-success-s) 78%);
+  --gym-success-500: hsl(var(--gym-success-h) var(--gym-success-s) 46%);
+  --gym-success-600: hsl(var(--gym-success-h) var(--gym-success-s) 42%);
+  --gym-success-700: hsl(var(--gym-success-h) var(--gym-success-s) 34%);
+
+  --gym-warning-h: 38;
+  --gym-warning-s: 92%;
+  --gym-warning-50: hsl(var(--gym-warning-h) var(--gym-warning-s) 95%);
+  --gym-warning-100: hsl(var(--gym-warning-h) var(--gym-warning-s) 89%);
+  --gym-warning-200: hsl(var(--gym-warning-h) var(--gym-warning-s) 80%);
+  --gym-warning-500: hsl(var(--gym-warning-h) var(--gym-warning-s) 52%);
+  --gym-warning-600: hsl(var(--gym-warning-h) var(--gym-warning-s) 48%);
+  --gym-warning-700: hsl(var(--gym-warning-h) var(--gym-warning-s) 38%);
+
+  --gym-danger-h: 0;
+  --gym-danger-s: 72%;
+  --gym-danger-50: hsl(var(--gym-danger-h) var(--gym-danger-s) 96%);
+  --gym-danger-100: hsl(var(--gym-danger-h) var(--gym-danger-s) 91%);
+  --gym-danger-200: hsl(var(--gym-danger-h) var(--gym-danger-s) 84%);
+  --gym-danger-500: hsl(var(--gym-danger-h) var(--gym-danger-s) 52%);
+  --gym-danger-600: hsl(var(--gym-danger-h) var(--gym-danger-s) 48%);
+  --gym-danger-700: hsl(var(--gym-danger-h) var(--gym-danger-s) 40%);
+
+  --gym-info-h: 199;
+  --gym-info-s: 89%;
+  --gym-info-50: hsl(var(--gym-info-h) var(--gym-info-s) 96%);
+  --gym-info-100: hsl(var(--gym-info-h) var(--gym-info-s) 90%);
+  --gym-info-200: hsl(var(--gym-info-h) var(--gym-info-s) 82%);
+  --gym-info-500: hsl(var(--gym-info-h) var(--gym-info-s) 50%);
+  --gym-info-600: hsl(var(--gym-info-h) var(--gym-info-s) 46%);
+  --gym-info-700: hsl(var(--gym-info-h) var(--gym-info-s) 38%);
+
+  /* Elevation */
+  --gym-shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 1px 3px rgb(15 23 42 / 0.06);
+  --gym-shadow-elevated: 0 10px 24px -6px rgb(15 23 42 / 0.12), 0 4px 10px -4px rgb(15 23 42 / 0.08);
+  --gym-shadow-popover: 0 18px 42px -8px rgb(15 23 42 / 0.22), 0 4px 12px -4px rgb(15 23 42 / 0.12);
+  --gym-radius-card: 1rem;
+  --gym-radius-control: 0.625rem;
+}
+
+/*
+ * ============================================================
+ *  RAW TOKENS — DARK MODE
+ * ============================================================
+ */
+:root.dark {
+  color-scheme: dark;
+
+  --gym-background: hsl(224 30% 7%);
+  --gym-surface: hsl(222 30% 11%);
+  --gym-surface-2: hsl(222 28% 14%);
+  --gym-surface-3: hsl(220 26% 17%);
+  --gym-foreground: hsl(210 20% 97%);
+  --gym-muted: hsl(215 20% 64%);
+  --gym-muted-foreground: hsl(215 18% 60%);
+  --gym-border: hsl(217 25% 20%);
+  --gym-border-subtle: hsl(217 25% 16%);
+  --gym-overlay: hsl(222 47% 4% / 0.7);
+
+  --gym-sidebar: hsl(224 40% 5%);
+  --gym-sidebar-foreground: hsl(210 20% 97%);
+  --gym-sidebar-muted: hsl(215 20% 58%);
+  --gym-sidebar-accent: hsl(var(--gym-brand-h) var(--gym-brand-s) 62%);
+  --gym-header: hsl(224 30% 8% / 0.82);
+
+  --gym-shadow-card: 0 1px 2px rgb(0 0 0 / 0.4);
+  --gym-shadow-elevated: 0 12px 28px -8px rgb(0 0 0 / 0.55), 0 4px 12px -6px rgb(0 0 0 / 0.4);
+  --gym-shadow-popover: 0 20px 48px -10px rgb(0 0 0 / 0.65), 0 4px 16px -6px rgb(0 0 0 / 0.5);
+}
+
+/*
+ * ============================================================
+ *  THEME PRESETS — each only overrides hue/saturation (and
+ *  optionally shell surfaces). Brand/accent scales derive from
+ *  the tokens defined above, so presets stay compact.
+ * ============================================================
+ */
+
+/* 1. Default Blue */
+:root[data-theme="default-blue"] {
+  --gym-brand-h: 217;
+  --gym-brand-s: 91%;
+  --gym-accent-h: 262;
+  --gym-accent-s: 83%;
+}
+
+/* 2. Indigo (original brand) */
+:root[data-theme="indigo"] {
+  --gym-brand-h: 239;
+  --gym-brand-s: 84%;
+  --gym-accent-h: 262;
+  --gym-accent-s: 83%;
+}
+
+/* 3. Emerald */
+:root[data-theme="emerald"] {
+  --gym-brand-h: 158;
+  --gym-brand-s: 64%;
+  --gym-accent-h: 164;
+  --gym-accent-s: 80%;
+}
+
+/* 4. Forest */
+:root[data-theme="forest"] {
+  --gym-brand-h: 142;
+  --gym-brand-s: 71%;
+  --gym-accent-h: 160;
+  --gym-accent-s: 84%;
+}
+
+/* 5. Ocean */
+:root[data-theme="ocean"] {
+  --gym-brand-h: 199;
+  --gym-brand-s: 89%;
+  --gym-accent-h: 217;
+  --gym-accent-s: 91%;
+}
+
+/* 6. Slate */
+:root[data-theme="slate"] {
+  --gym-brand-h: 217;
+  --gym-brand-s: 33%;
+  --gym-accent-h: 240;
+  --gym-accent-s: 40%;
+}
+
+/* 7. Rose */
+:root[data-theme="rose"] {
+  --gym-brand-h: 340;
+  --gym-brand-s: 82%;
+  --gym-accent-h: 350;
+  --gym-accent-s: 89%;
+}
+
+/* 8. Crimson */
+:root[data-theme="crimson"] {
+  --gym-brand-h: 348;
+  --gym-brand-s: 85%;
+  --gym-accent-h: 356;
+  --gym-accent-s: 80%;
+}
+
+/* 9. Orange */
+:root[data-theme="orange"] {
+  --gym-brand-h: 24;
+  --gym-brand-s: 95%;
+  --gym-accent-h: 20;
+  --gym-accent-s: 90%;
+}
+
+/* 10. Amber */
+:root[data-theme="amber"] {
+  --gym-brand-h: 38;
+  --gym-brand-s: 92%;
+  --gym-accent-h: 45;
+  --gym-accent-s: 93%;
+}
+
+/* 11. Purple */
+:root[data-theme="purple"] {
+  --gym-brand-h: 267;
+  --gym-brand-s: 84%;
+  --gym-accent-h: 285;
+  --gym-accent-s: 82%;
+}
+
+/* 12. Graphite */
+:root[data-theme="graphite"] {
+  --gym-brand-h: 230;
+  --gym-brand-s: 20%;
+  --gym-accent-h: 258;
+  --gym-accent-s: 26%;
+}
+
+/* 13. Minimal White — clean, near-monochrome light shell */
+:root[data-theme="minimal-white"] {
+  --gym-brand-h: 228;
+  --gym-brand-s: 14%;
+  --gym-brand-s-deep: 12%;
+  --gym-accent-h: 250;
+  --gym-accent-s: 20%;
+  --gym-accent-s-deep: 16%;
+
+  --gym-background: hsl(0 0% 98%);
+  --gym-sidebar: hsl(0 0% 99%);
+  --gym-sidebar-foreground: hsl(222 20% 12%);
+  --gym-sidebar-muted: hsl(220 10% 46%);
+  --gym-border: hsl(220 14% 92%);
+}
+:root.dark[data-theme="minimal-white"] {
+  --gym-background: hsl(220 14% 6%);
+  --gym-sidebar: hsl(220 16% 8%);
+  --gym-sidebar-foreground: hsl(210 20% 96%);
+  --gym-sidebar-muted: hsl(215 12% 60%);
+}
+
+/* 14. Cyber — high-contrast neon */
+:root[data-theme="cyber"] {
+  --gym-brand-h: 190;
+  --gym-brand-s: 96%;
+  --gym-brand-s-deep: 92%;
+  --gym-accent-h: 320;
+  --gym-accent-s: 90%;
+  --gym-accent-s-deep: 86%;
+
+  --gym-background: hsl(230 50% 5%);
+  --gym-surface: hsl(228 44% 9%);
+  --gym-surface-2: hsl(228 42% 12%);
+  --gym-surface-3: hsl(226 40% 15%);
+  --gym-sidebar: hsl(232 55% 4%);
+  --gym-border: hsl(226 40% 22%);
+  --gym-border-subtle: hsl(226 40% 17%);
+}
+:root:not(.dark)[data-theme="cyber"] {
+  --gym-background: hsl(220 40% 96%);
+  --gym-surface: hsl(0 0% 100%);
+  --gym-sidebar: hsl(232 55% 7%);
+  --gym-sidebar-foreground: hsl(190 60% 95%);
+  --gym-sidebar-muted: hsl(190 20% 60%);
+}
+
+/* 15. Nord — muted arctic frost */
+:root[data-theme="nord"] {
+  --gym-brand-h: 213;
+  --gym-brand-s: 60%;
+  --gym-brand-s-deep: 55%;
+  --gym-accent-h: 193;
+  --gym-accent-s: 65%;
+  --gym-accent-s-deep: 58%;
+
+  --gym-background: hsl(216 25% 94%);
+  --gym-surface: hsl(214 32% 98%);
+  --gym-border: hsl(216 20% 88%);
+  --gym-sidebar: hsl(220 16% 14%);
+  --gym-sidebar-muted: hsl(216 15% 62%);
+}
+:root.dark[data-theme="nord"] {
+  --gym-background: hsl(220 20% 10%);
+  --gym-surface: hsl(218 18% 14%);
+  --gym-surface-2: hsl(218 16% 17%);
+  --gym-surface-3: hsl(216 15% 20%);
+  --gym-sidebar: hsl(220 22% 7%);
+  --gym-border: hsl(218 14% 23%);
+  --gym-border-subtle: hsl(218 14% 18%);
+}
+
+/* ============================================================ */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-background text-foreground antialiased;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Thin, subtle scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-border;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted;
+}
+
+/* Brand gradient helpers */
+.bg-brand-gradient {
+  background-image: linear-gradient(
+    135deg,
+    var(--color-brand-600),
+    var(--color-brand-700) 55%,
+    var(--color-accent-600)
+  );
+}
+.bg-brand-gradient-soft {
+  background-image: linear-gradient(
+    135deg,
+    var(--color-brand-50),
+    var(--color-accent-50)
+  );
+}
+.text-gradient {
+  background-image: linear-gradient(
+    90deg,
+    var(--color-brand-600),
+    var(--color-accent-600)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Shimmer used by skeleton loaders */
+@keyframes shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-3) 25%,
+    var(--color-surface-2) 37%,
+    var(--color-surface-3) 63%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

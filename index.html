@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gym Manager — Gym Owner Portal</title>
+    <meta
+      name="description"
+      content="Manage your gym members, memberships, subscription plans, payments and analytics — all in one place."
+    />
+    <meta name="theme-color" content="#4f46e5" />
+    <script>
+      ;(function () {
+        try {
+          var raw = localStorage.getItem('gm:appearance')
+          var state = raw ? JSON.parse(raw) : {}
+          var mode = state.mode === 'dark' || state.mode === 'light' || state.mode === 'system' ? state.mode : 'system'
+          var theme = typeof state.theme === 'string' ? state.theme : 'indigo'
+          var resolved = mode === 'dark' ? 'dark' : mode === 'light' ? 'light' : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+          var root = document.documentElement
+          if (resolved === 'dark') root.classList.add('dark')
+          root.setAttribute('data-theme', theme)
+        } catch (e) {}
+      })()
+    </script>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <meta property="og:title" content="Gym Manager — Gym Owner Portal" />
+    <meta property="og:description" content="Manage members, memberships, plans and payments with ease." />
+    <meta property="og:type" content="website" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
