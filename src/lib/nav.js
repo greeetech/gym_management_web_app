@@ -12,6 +12,7 @@ export const NAV_GROUPS = [
       { to: '/members', label: 'Members', icon: 'users' },
       { to: '/memberships', label: 'Memberships', icon: 'shield' },
       { to: '/plans', label: 'Subscription Plans', icon: 'list' },
+      { to: '/leads', label: 'Leads', icon: 'users' },
     ],
   },
   {
@@ -20,7 +21,11 @@ export const NAV_GROUPS = [
   },
   {
     label: 'Account',
-    items: [{ to: '/settings', label: 'Settings', icon: 'settings' }],
+    items: [
+      { to: '/setup', label: 'Gym Setup', icon: 'settings' },
+      { to: '/website', label: 'Website Builder', icon: 'globe' },
+      { to: '/settings', label: 'Settings', icon: 'settings' },
+    ],
   },
 ]
 
@@ -30,8 +35,11 @@ export const PAGE_TITLES = {
   '/members': { title: 'Members', subtitle: 'Manage your members' },
   '/memberships': { title: 'Memberships', subtitle: 'Track active memberships and renewals' },
   '/plans': { title: 'Subscription Plans', subtitle: 'Plan templates for your members' },
+  '/leads': { title: 'Leads', subtitle: 'Capture, nurture and convert leads' },
   '/billing': { title: 'Billing & Plans', subtitle: 'Manage your gym management subscription' },
   '/settings': { title: 'Settings', subtitle: 'Preferences, profile and plan' },
+  '/setup': { title: 'Gym Setup', subtitle: 'Configure your gym business' },
+  '/website': { title: 'Website Builder', subtitle: 'Build and publish your public site' },
 }
 
 export const NAV_ITEMS = NAV_GROUPS.flatMap((group) => group.items)

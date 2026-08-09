@@ -10,6 +10,7 @@ import MembershipForm from '../components/MembershipForm'
 import { Alert, Avatar, Button, Card, EmptyState, Field, PageHeader, inputClass } from '../components/ui'
 import { Icon } from '../components/icons'
 import { formatDate, formatINR } from '../utils/format'
+import WhatsAppSender from '../components/WhatsAppSender'
 
 function DetailRow({ label, value }) {
   return (
@@ -68,6 +69,7 @@ export default function MemberDetail() {
   const [picFile, setPicFile] = useState(null)
   const [picPreview, setPicPreview] = useState('')
   const [picError, setPicError] = useState('')
+  const [waOpen, setWaOpen] = useState(false)
 
   const picMutation = useUpdateProfilePic()
 
@@ -179,6 +181,10 @@ export default function MemberDetail() {
                 <Icon name="refresh" className="size-4" />
                 Renew / New membership
               </Button>
+              <Button variant="secondary" onClick={() => setWaOpen(true)}>
+                <Icon name="message-circle" className="size-4" />
+                Send WhatsApp
+              </Button>
               <Link
                 to="/memberships"
                 className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-surface-2"
@@ -258,6 +264,13 @@ export default function MemberDetail() {
           </div>
         </form>
       </Modal>
+
+      <WhatsAppSender
+        open={waOpen}
+        onClose={() => setWaOpen(false)}
+        member={member}
+        membership={membership}
+      />
     </div>
   )
 }

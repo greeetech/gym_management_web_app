@@ -7,6 +7,7 @@ import StatusBadge from '../components/StatusBadge'
 import { CardSkeleton, TableSkeleton, ChartSkeleton } from '../components/Skeleton'
 import { ChartCard, GrowthBarChart, PlanDonutChart, RevenueAreaChart } from '../components/charts'
 import OnboardingChecklist from '../components/OnboardingChecklist'
+import SetupBanner from '../components/SetupBanner'
 import { Alert, EmptyState } from '../components/ui'
 import { Icon } from '../components/icons'
 import { formatDate, formatINR, initials, daysUntil } from '../utils/format'
@@ -98,7 +99,7 @@ export default function Dashboard() {
   const { user } = useAuth()
   const analytics = useAnalytics()
   const recentQuery = useMembers({ limit: 5 })
-  const expiringQuery = useMembers({ limit: 10, statusFilter: 'Expiry Soon' })
+  const expiringQuery = useMembers({ limit: 10, expiresIn: 7 })
   const statusCounts = useMembershipStatusCounts()
   const plansQuery = usePlans()
   const sub = useOwnerSubscription()
@@ -109,13 +110,20 @@ export default function Dashboard() {
   const statusMap = statusCounts.data?.data || {}
   const plansCount = plansQuery.data?.length || 0
 
-  const expirySoon = statusMap['Expiry Soon'] ?? expiring.length
+  const expiringIn7 = expiringQuery.data?.pagination?.total ?? expiring.length
 
   const stats = [
     { label: 'Total Members', value: d.totalGymMembers ?? 0, accent: 'brand', icon: 'users' },
     { label: 'Active Memberships', value: d.totalActiveMemberships ?? 0, accent: 'green', icon: 'shield' },
     { label: 'Total Revenue', value: formatINR(d.totalRevenueGenerated), accent: 'violet', icon: 'currency' },
-    { label: 'Expiry Soon', value: expirySoon, accent: 'orange', icon: 'clock' },
+    {
+      label: 'Expiring in 7 days',
+      value: expiringIn7,
+      accent: 'orange',
+      icon: 'clock',
+      sub: 'Memberships nearing renewal',
+      to: '/members?expiresIn=7',
+    },
   ]
 
   const loading = analytics.isLoading
@@ -124,6 +132,7 @@ export default function Dashboard() {
     <div className="space-y-6">
       <HeroCard user={user} sub={sub.current} />
       <PlanInactiveBanner sub={sub} />
+      <SetupBanner />
 
       <OnboardingChecklist
         plansCount={plansCount}
@@ -213,10 +222,10 @@ export default function Dashboard() {
         <div className="overflow-hidden rounded-2xl border border-border bg-surface text-foreground shadow-card">
           <div className="flex items-center justify-between border-b border-border-subtle px-5 py-4">
             <div>
-              <h3 className="text-sm font-bold">Expiring Soon</h3>
+              <h3 className="text-sm font-bold">Expiring in 7 Days</h3>
               <p className="text-xs text-muted-foreground">Memberships nearing renewal</p>
             </div>
-            <Link to="/members?status=Expiry%20Soon" className="text-xs font-semibold text-brand-600 hover:text-brand-700">View all</Link>
+            <Link to="/members?expiresIn=7" className="text-xs font-semibold text-brand-600 hover:text-brand-700">View all</Link>
           </div>
           {expiringQuery.isLoading ? (
             <TableSkeleton rows={4} cols={3} />

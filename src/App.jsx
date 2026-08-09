@@ -18,6 +18,10 @@ const Plans = lazy(() => import('./pages/Plans'))
 const Payments = lazy(() => import('./pages/Payments'))
 const Analytics = lazy(() => import('./pages/Analytics'))
 const Settings = lazy(() => import('./pages/Settings'))
+const GymSetup = lazy(() => import('./pages/GymSetup'))
+const WebsiteBuilder = lazy(() => import('./pages/WebsiteBuilder'))
+const GymSite = lazy(() => import('./public/GymSite'))
+const Leads = lazy(() => import('./pages/Leads'))
 
 function PageLoader() {
   return (
@@ -33,6 +37,7 @@ function AppRoutes() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/g/:slug" element={<GymSite />} />
 
         <Route
           path="/"
@@ -51,6 +56,9 @@ function AppRoutes() {
           <Route path="billing" element={<Payments />} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="settings" element={<Settings />} />
+          <Route path="setup" element={<GymSetup />} />
+          <Route path="website" element={<WebsiteBuilder />} />
+          <Route path="leads" element={<Leads />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

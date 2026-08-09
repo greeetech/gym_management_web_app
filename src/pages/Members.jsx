@@ -24,6 +24,8 @@ import {
 import { Icon } from '../components/icons'
 import MemberForm from '../components/MemberForm'
 import MembershipForm from '../components/MembershipForm'
+import ExpiryFilter from '../components/ExpiryFilter'
+import WhatsAppSender from '../components/WhatsAppSender'
 import { formatDate } from '../utils/format'
 import { exportRowsToCSV } from '../utils/csv'
 
@@ -43,7 +45,7 @@ const CSV_COLUMNS = [
 
 export default function Members() {
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const toast = useToast()
   const subscription = useOwnerSubscription()
   const [page, setPage] = useState(1)
@@ -51,19 +53,20 @@ export default function Members() {
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState(searchParams.get('status') || 'All')
+  const [expiresIn, setExpiresIn] = useState(() => {
+    const v = searchParams.get('expiresIn')
+    return v && Number(v) > 0 ? Number(v) : ''
+  })
   const [sort, setSort] = useState(null)
 
-  const { data, isLoading, isFetching, error, refetch } = useMembers(
-    {
-      page,
-      limit,
-      search: debouncedSearch,
-      statusFilter,
-      sortBy: sort?.key,
-      sortOrder: sort?.direction,
-    },
-    { placeholderData: (prev) => prev },
-  )
+  const { data, isLoading, isFetching, error, refetch } = useMembers({
+    page,
+    limit,
+    search: debouncedSearch,
+    statusFilter,
+    ...(expiresIn ? { expiresIn } : {}),
+    ...(sort?.key ? { sortBy: sort.key, sortOrder: sort.direction } : {}),
+  })
 
   const plansQuery = usePlans()
 
@@ -81,6 +84,8 @@ export default function Members() {
   const [picFile, setPicFile] = useState(null)
   const [picPreview, setPicPreview] = useState('')
   const [picError, setPicError] = useState('')
+
+  const [waTarget, setWaTarget] = useState(null)
 
   const [exporting, setExporting] = useState(null)
 
@@ -281,6 +286,10 @@ export default function Members() {
                 <Icon name="image" />
                 Update photo
               </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => setWaTarget(m)}>
+                <Icon name="message-circle" />
+                Send WhatsApp
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem variant="danger" onSelect={() => setDeleteTarget(m)}>
                 <Icon name="trash" />
@@ -347,22 +356,35 @@ export default function Members() {
             className={inputClass(false, 'pl-10')}
           />
         </div>
-        <div className="flex items-center gap-2">
-          <span className="hidden text-sm text-muted-foreground sm:block">Status:</span>
-          <NativeSelect
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value)
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <div className="flex items-center gap-2">
+            <span className="hidden text-sm text-muted-foreground sm:block">Status:</span>
+            <NativeSelect
+              value={statusFilter}
+              onChange={(e) => {
+                setStatusFilter(e.target.value)
+                setPage(1)
+              }}
+              className="w-44"
+            >
+              {STATUS_FILTERS.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </NativeSelect>
+          </div>
+          <ExpiryFilter
+            value={expiresIn}
+            onChange={(v) => {
+              setExpiresIn(v)
               setPage(1)
+              const next = new URLSearchParams(searchParams)
+              if (v) next.set('expiresIn', String(v))
+              else next.delete('expiresIn')
+              setSearchParams(next, { replace: true })
             }}
-            className="w-44"
-          >
-            {STATUS_FILTERS.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </NativeSelect>
+          />
         </div>
       </div>
 
@@ -459,6 +481,13 @@ export default function Members() {
           </div>
         </form>
       </Modal>
+
+      <WhatsAppSender
+        open={!!waTarget}
+        onClose={() => setWaTarget(null)}
+        member={waTarget}
+        membership={waTarget?.membershipId}
+      />
     </div>
   )
 }

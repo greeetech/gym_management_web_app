@@ -11,6 +11,7 @@ import {
 } from '../components/ui'
 import MembershipForm from '../components/MembershipForm'
 import MembershipDetailDrawer from '../components/MembershipDetailDrawer'
+import ExpiryFilter from '../components/ExpiryFilter'
 import { formatDate, formatINR } from '../utils/format'
 import { Icon } from '../components/icons'
 
@@ -22,6 +23,7 @@ export default function Memberships() {
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('All')
+  const [expiresIn, setExpiresIn] = useState('')
   const [sort, setSort] = useState(null)
 
   useEffect(() => {
@@ -29,17 +31,14 @@ export default function Memberships() {
     return () => clearTimeout(t)
   }, [search])
 
-  const { data, isLoading, isFetching, error, refetch } = useMemberships(
-    {
-      page,
-      limit,
-      search: debouncedSearch,
-      status: statusFilter,
-      sortBy: sort?.key,
-      sortOrder: sort?.direction,
-    },
-    { placeholderData: (prev) => prev },
-  )
+  const { data, isLoading, isFetching, error, refetch } = useMemberships({
+    page,
+    limit,
+    search: debouncedSearch,
+    status: statusFilter,
+    ...(expiresIn ? { expiresIn } : {}),
+    ...(sort?.key ? { sortBy: sort.key, sortOrder: sort.direction } : {}),
+  })
 
   const plansQuery = usePlans()
   const membersQuery = useMembers({ limit: 100 })
@@ -147,22 +146,31 @@ export default function Memberships() {
           }}
           placeholder="Search by plan name..."
         />
-        <div className="flex items-center gap-2">
-          <span className="hidden text-sm text-muted-foreground sm:block">Status:</span>
-          <NativeSelect
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value)
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <div className="flex items-center gap-2">
+            <span className="hidden text-sm text-muted-foreground sm:block">Status:</span>
+            <NativeSelect
+              value={statusFilter}
+              onChange={(e) => {
+                setStatusFilter(e.target.value)
+                setPage(1)
+              }}
+              className="w-44"
+            >
+              {STATUS_FILTERS.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </NativeSelect>
+          </div>
+          <ExpiryFilter
+            value={expiresIn}
+            onChange={(v) => {
+              setExpiresIn(v)
               setPage(1)
             }}
-            className="w-44"
-          >
-            {STATUS_FILTERS.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </NativeSelect>
+          />
         </div>
       </div>
 

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { Icon } from './icons'
 import { cn } from '../lib/utils'
 
@@ -12,12 +13,13 @@ const ACCENTS = {
   slate: 'bg-gradient-to-br from-slate-500 to-slate-700',
 }
 
-export default function StatCard({ label, value, icon, accent = 'brand', sub, hint, className }) {
+export default function StatCard({ label, value, icon, accent = 'brand', sub, hint, to, className }) {
   const gradient = ACCENTS[accent] || ACCENTS.brand
-  return (
+  const content = (
     <div
       className={cn(
         'group relative overflow-hidden rounded-2xl border border-border bg-surface p-5 text-foreground shadow-card transition hover:-translate-y-0.5 hover:shadow-elevated',
+        to && 'cursor-pointer',
         className,
       )}
     >
@@ -37,4 +39,14 @@ export default function StatCard({ label, value, icon, accent = 'brand', sub, hi
       />
     </div>
   )
+
+  if (to) {
+    return (
+      <Link to={to} className="block">
+        {content}
+      </Link>
+    )
+  }
+
+  return content
 }

@@ -6,6 +6,7 @@ import StatusBadge from './StatusBadge'
 import Spinner from './Spinner'
 import { Alert, Button, Field } from './ui'
 import { formatDate, formatINR, initials } from '../utils/format'
+import WhatsAppSender from './WhatsAppSender'
 
 const UPDATEABLE_STATUSES = ['Active', 'Inactive', 'Cancelled']
 
@@ -26,6 +27,7 @@ export default function MembershipDetailDrawer({ open, membershipId, onClose, on
   const [statusValue, setStatusValue] = useState('Active')
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
+  const [waOpen, setWaOpen] = useState(false)
 
   useEffect(() => {
     if (!open || !membershipId) {
@@ -210,11 +212,21 @@ export default function MembershipDetailDrawer({ open, membershipId, onClose, on
                     Renew membership
                   </Button>
                 )}
+
+                <Button variant="secondary" className="w-full" onClick={() => setWaOpen(true)}>
+                  Send WhatsApp
+                </Button>
               </div>
             ) : null}
           </div>
         </div>
       </div>
+      <WhatsAppSender
+        open={waOpen}
+        onClose={() => setWaOpen(false)}
+        member={member}
+        membership={detail}
+      />
     </div>
   )
 }
