@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { getGymSetup, saveSetupStep, completeSetup, uploadSetupImage, deleteSetupImage } from '../services/setup'
 import { getErrorMessage } from '../services/api'
+import { useTheme } from '../hooks/useTheme'
 import { useToast } from '../components/Toast'
 import {
   Button,
@@ -314,6 +315,15 @@ function ObjectList({ field, value, onChange }) {
 
 function StepForm({ stepKey, initial, onSaved }) {
   const [data, setData] = useState(() => clone(initial))
+  const { setTheme } = useTheme()
+
+  // Live preview for theme customization
+  useEffect(() => {
+    if (stepKey === 'customization' && data?.customization?.themePreset) {
+      setTheme(data.customization.themePreset)
+    }
+  }, [stepKey, data?.customization?.themePreset, setTheme])
+
   const [errors, setErrors] = useState({})
   const [saving, setSaving] = useState(false)
   const fields = STEP_FIELD_GROUPS[stepKey] || []
@@ -442,7 +452,7 @@ export default function GymSetup() {
     return (
       <PageHeader
         title="Gym Setup"
-        subtitle="Something went wrong loading your setup."
+        subtitle={`Something went wrong loading your setup. ${error?.message || String(error)}`}
       />
     )
   }

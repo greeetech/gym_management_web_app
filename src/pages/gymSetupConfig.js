@@ -23,7 +23,7 @@ export const STEP_FIELD_GROUPS = {
     { key: 'emergencyContact', label: 'Emergency contact', type: 'text' },
     { key: 'email', label: 'Email', type: 'text', required: true },
     { key: 'supportEmail', label: 'Support email', type: 'text' },
-    { key: 'website', label: 'Website', type: 'text' },
+    { key: 'website', label: 'Website URL', type: 'text' },
     {
       key: 'socials',
       label: 'Social profiles',
@@ -259,7 +259,7 @@ export const STEP_FIELD_GROUPS = {
     },
   ],
 
-  website: [
+  /* website: [
     { key: 'slug', label: 'Website slug', type: 'text', required: true, help: 'Your public URL will be /g/<slug>' },
     { key: 'enabledSections', label: 'Enabled sections', type: 'tags', help: 'Home, About, Services, Trainers, Gallery, Testimonials, Contact' },
     { key: 'hero.headline', label: 'Hero headline', type: 'text' },
@@ -269,6 +269,22 @@ export const STEP_FIELD_GROUPS = {
     { key: 'seo.title', label: 'SEO title', type: 'text' },
     { key: 'seo.description', label: 'SEO description', type: 'textarea' },
     { key: 'seo.keywords', label: 'SEO keywords', type: 'tags' },
+  ], */
+
+  customization: [
+    {
+      key: 'themePreset',
+      label: 'Theme Preset',
+      type: 'select',
+      options: [
+        'indigo', 'emerald', 'crimson', 'ocean', 'forest', 'orange',
+        'cyber', 'purple', 'rose', 'amber', 'nord', 'graphite', 'slate', 'default-blue', 'minimal-white'
+      ],
+      required: true
+    },
+    { key: 'primaryColor', label: 'Primary Brand Color (Hex)', type: 'text', placeholder: '#4f46e5' },
+    { key: 'borderRadius', label: 'Border Radius', type: 'select', options: ['0.25rem', '0.5rem', '0.75rem', '1.25rem'] },
+    { key: 'fontFamily', label: 'Font Family', type: 'select', options: ['Inter', 'Plus Jakarta Sans', 'Outfit', 'Poppins', 'Roboto'] }
   ],
 }
 
@@ -279,5 +295,5 @@ export const OPTIONAL_STEP_LABELS = new Set([
   'notificationSettings',
   'security',
   'documents',
-  'website',
+  // 'website',
 ])

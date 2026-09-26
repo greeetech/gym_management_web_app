@@ -24,7 +24,7 @@ const STATUS_COLORS = { New: 'blue', Contacted: 'amber', Qualified: 'green', Con
 
 const EMPTY_FORM = { name: '', email: '', phone: '', source: '', message: '', interest: '' }
 
-function LeadModal({ open, onClose, lead, onSuccess }) {
+function LeadModal({ open, onClose, lead, onSuccess, plans }) {
   const toast = useToast()
   const [form, setForm] = useState(EMPTY_FORM)
   const [error, setError] = useState('')
@@ -91,8 +91,19 @@ function LeadModal({ open, onClose, lead, onSuccess }) {
             <input className={inputClass(false)} value={form.source} onChange={set('source')} placeholder="Website, walk-in, referral..." />
           </Field>
           <Field label="Interest">
-            <input className={inputClass(false)} value={form.interest} onChange={set('interest')} placeholder="Monthly plan, PT..." />
-          </Field>
+              <NativeSelect value={form.interest} onChange={set('interest')}>
+                <option value="">Select interest...</option>
+                <option value="General Inquiry">General Inquiry</option>
+                <option value="Personal Training">Personal Training</option>
+                <optgroup label="Membership Plans">
+                  {(plans || []).map((p) => (
+                    <option key={p._id} value={p.name}>
+                      {p.name} — ₹{p.price || 0}/{p.duration}
+                    </option>
+                  ))}
+                </optgroup>
+              </NativeSelect>
+            </Field>
         </div>
         <Field label="Message">
           <textarea rows={3} className={`${inputClass(false)} resize-y`} value={form.message} onChange={set('message')} />
@@ -110,6 +121,7 @@ function ConvertModal({ lead, plans, onClose, onSuccess }) {
   const toast = useToast()
   const [subscriptionId, setSubscriptionId] = useState('')
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0])
+  const [gender, setGender] = useState('Male')
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
 
@@ -121,7 +133,7 @@ function ConvertModal({ lead, plans, onClose, onSuccess }) {
     setSaving(true)
     setError('')
     try {
-      await convertLead(lead._id, { subscriptionId, startDate })
+      await convertLead(lead._id, { subscriptionId, startDate, gender })
       toast.success(`${lead.name} converted to member!`)
       onSuccess?.()
       onClose()
@@ -136,6 +148,13 @@ function ConvertModal({ lead, plans, onClose, onSuccess }) {
     <Modal open title={`Convert ${lead.name} to member`} onClose={onClose}>
       <div className="flex flex-col gap-4">
         {error && <p className="text-sm text-danger-600">{error}</p>}
+        <Field label="Gender">
+          <NativeSelect value={gender} onChange={(e) => setGender(e.target.value)}>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </NativeSelect>
+        </Field>
         <Field label="Membership plan">
           <NativeSelect value={subscriptionId} onChange={(e) => setSubscriptionId(e.target.value)}>
             <option value="">Select a plan...</option>
@@ -342,7 +361,7 @@ export default function Leads() {
         emptyState={{ title: 'No leads found', message: 'Try a different filter or add your first lead.', icon: 'users' }}
       />
 
-      <LeadModal open={formOpen} onClose={() => setFormOpen(false)} lead={editing} onSuccess={invalidate} />
+      <LeadModal open={formOpen} onClose={() => setFormOpen(false)} lead={editing} onSuccess={invalidate} plans={plans} />
 
       {convertTarget && (
         <ConvertModal

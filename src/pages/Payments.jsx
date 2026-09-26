@@ -4,10 +4,12 @@ import { usePayments, usePaymentPlans } from '../hooks/useQueries'
 import { useOwnerSubscription } from '../hooks/useOwnerSubscription'
 import { useToast } from '../components/Toast'
 import StatusBadge from '../components/StatusBadge'
-import { Alert, Button, DataGrid, EmptyState, PageHeader } from '../components/ui'
+import PricingPlanCard from '../components/PricingPlanCard'
+import { Alert, Button, DataGrid, EmptyState, PageHeader, Card, Badge } from '../components/ui'
 import { Icon } from '../components/icons'
-import { formatDate, formatINR } from '../utils/format'
+import { formatDate, formatINR, daysUntil } from '../utils/format'
 import { exportRowsToCSV } from '../utils/csv'
+import { cn } from '../lib/utils'
 
 function loadRazorpayScript() {
   return new Promise((resolve, reject) => {
@@ -38,15 +40,19 @@ export default function Payments() {
   const [limit] = useState(10)
   const historyQuery = usePayments({ page, limit })
 
-  const [billingCycle, setBillingCycle] = useState({})
+  const [globalBillingCycle, setGlobalBillingCycle] = useState('monthly')
   const [processingId, setProcessingId] = useState(null)
   const [error, setError] = useState(null)
 
   const plans = plansQuery.data || []
   const history = historyQuery.data?.data || { items: [], pagination: { page: 1, totalPages: 1 } }
 
+  const activeSub = subscription?.active || null
+  const activePlanName = (activeSub?.planSnapshot?.name || '').toLowerCase()
+  const activePlanId = activeSub?.planId ? String(activeSub.planId) : null
+
   const handlePurchase = async (plan) => {
-    const cycle = billingCycle[plan._id] || 'monthly'
+    const cycle = globalBillingCycle || 'monthly'
     setProcessingId(plan._id)
     setError(null)
     try {
@@ -55,6 +61,20 @@ export default function Payments() {
         billingCycle: cycle,
       })
       const order = orderRes.data.data
+
+      if (order.keyId === 'rzp_test_replace_me' || (order.orderId && order.orderId.startsWith('order_dummy_'))) {
+        toast.success('Test Mode: Simulating Payment Success')
+        await api.post('/payment/verify-payment', {
+          subscriptionId: order.subscriptionId,
+          razorpay_order_id: order.orderId,
+          razorpay_payment_id: 'pay_dummy_' + Date.now(),
+          razorpay_signature: 'dummy_signature',
+        })
+        if (subscription?.refresh) subscription.refresh()
+        if (historyQuery?.refetch) historyQuery.refetch()
+        setProcessingId(null)
+        return
+      }
 
       await loadRazorpayScript()
 
@@ -145,129 +165,154 @@ export default function Payments() {
   ]
 
   return (
-    <div>
+    <div className="space-y-8">
       <PageHeader
-        title="Billing & Plans"
-        subtitle="Upgrade your gym plan and view your payment history"
+        title="Billing & Subscription"
+        subtitle="Manage your SaaS plan, member quotas, and view verified payment receipts"
         breadcrumb="Billing"
       />
 
       {error && (
-        <div className="mb-6">
-          <Alert onClose={() => setError(null)}>{error}</Alert>
-        </div>
+        <Alert onClose={() => setError(null)}>{error}</Alert>
       )}
 
+      {/* Active Subscription Overview Card */}
+      {activeSub && (
+        <Card className="p-6 border-brand-500/30 bg-gradient-to-r from-brand-500/[0.06] via-surface to-surface shadow-sm">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex size-11 items-center justify-center rounded-2xl bg-brand-gradient text-white shadow-md shadow-brand-500/25">
+                <Icon name="shield" className="size-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-bold text-foreground">
+                    {activeSub.planSnapshot?.displayName || activeSub.planSnapshot?.name}
+                  </h3>
+                  <Badge variant="success" dot className="text-[11px] font-semibold">
+                    Active Subscription
+                  </Badge>
+                </div>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Billed {activeSub.billingCycle} · Renewal date:{' '}
+                  <strong className="text-foreground">{formatDate(activeSub.endDate)}</strong>
+                  {daysUntil(activeSub.endDate) !== null && (
+                    <span className="ml-1 text-brand-600 dark:text-brand-400 font-medium">
+                      ({daysUntil(activeSub.endDate)} days remaining)
+                    </span>
+                  )}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 text-xs">
+              <div className="rounded-xl border border-border bg-surface-2/60 px-4 py-2">
+                <span className="text-muted-foreground block text-[10px] uppercase font-bold tracking-wider">
+                  Member Limit
+                </span>
+                <span className="font-extrabold text-foreground text-sm">
+                  {activeSub.isUnlimited || activeSub.memberLimit == null
+                    ? 'Unlimited'
+                    : `${activeSub.currentMemberCount || 0} / ${activeSub.memberLimit}`}
+                </span>
+              </div>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {/* Billing Switcher (Global Frequency Toggle) */}
+      <div className="flex flex-col items-center justify-center gap-3 text-center">
+        <div className="inline-flex items-center rounded-2xl border border-border bg-surface p-1.5 shadow-xs">
+          <button
+            type="button"
+            onClick={() => setGlobalBillingCycle('monthly')}
+            className={cn(
+              'rounded-xl px-5 py-2 text-sm font-semibold transition-all cursor-pointer',
+              globalBillingCycle === 'monthly'
+                ? 'bg-brand-gradient text-white shadow-sm'
+                : 'text-muted-foreground hover:text-foreground',
+            )}
+          >
+            Monthly Billing
+          </button>
+          <button
+            type="button"
+            onClick={() => setGlobalBillingCycle('yearly')}
+            className={cn(
+              'flex items-center gap-2 rounded-xl px-5 py-2 text-sm font-semibold transition-all cursor-pointer',
+              globalBillingCycle === 'yearly'
+                ? 'bg-brand-gradient text-white shadow-sm'
+                : 'text-muted-foreground hover:text-foreground',
+            )}
+          >
+            <span>Yearly Billing</span>
+            <span className="rounded-full bg-success-500/15 px-2.5 py-0.5 text-xs font-bold text-success-600 dark:text-success-400">
+              Save up to 25%
+            </span>
+          </button>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Upgrade or switch your tier anytime with instant prorated member limits.
+        </p>
+      </div>
+
+      {/* Pricing Cards Grid */}
       {plansQuery.isLoading ? (
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-96 animate-pulse rounded-2xl border border-border bg-surface-2" />
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 max-w-4xl mx-auto">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="h-96 animate-pulse rounded-3xl border border-border bg-surface-2" />
           ))}
         </div>
       ) : plansQuery.error ? (
         <Alert>{plansQuery.error.message}</Alert>
       ) : plans.length === 0 ? (
-        <div className="rounded-2xl border border-border bg-surface shadow-card">
-          <EmptyState title="No plans available" message="No plans are available right now. Check back later." />
-        </div>
+        <Card className="p-8">
+          <EmptyState
+            title="No subscription plans available"
+            message="No active SaaS plans are configured right now. Please check back shortly."
+          />
+        </Card>
       ) : (
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+        <div
+          className={cn(
+            'grid grid-cols-1 gap-6',
+            plans.length === 1 && 'max-w-md mx-auto',
+            plans.length === 2 && 'md:grid-cols-2 max-w-4xl mx-auto',
+            plans.length >= 3 && 'md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto',
+          )}
+        >
           {plans.map((plan) => {
-            const monthly = plan.pricing?.monthly
-            const yearly = plan.pricing?.yearly
-            const cycle = billingCycle[plan._id] || 'monthly'
-            const activePrice = cycle === 'yearly' && yearly ? yearly.price : monthly?.price
-            const unlimited = monthly?.isUnlimited
+            const isCurrent =
+              Boolean(activePlanId && String(activePlanId) === String(plan._id)) ||
+              Boolean(
+                activePlanName &&
+                  (activePlanName === plan.name?.toLowerCase() ||
+                    activePlanName === plan.displayName?.toLowerCase()),
+              )
+
             return (
-              <div
+              <PricingPlanCard
                 key={plan._id}
-                className={`relative flex flex-col overflow-hidden rounded-2xl border bg-surface shadow-card transition hover:-translate-y-1 hover:shadow-elevated ${
-                  plan.highlight ? 'border-brand-600 ring-2 ring-brand-600/40' : 'border-border'
-                }`}
-              >
-                <div className={`px-6 pb-5 pt-7 ${plan.highlight ? 'bg-gradient-to-br from-brand-600 to-brand-800' : 'bg-gradient-to-br from-slate-800 to-slate-900'}`}>
-                  {plan.tag && (
-                    <span className="absolute -top-3 left-6 rounded-full bg-brand-600 px-3 py-1 text-xs font-bold text-white shadow-md">
-                      {plan.tag}
-                    </span>
-                  )}
-                  <h3 className="text-xl font-extrabold text-white">{plan.displayName || plan.name}</h3>
-                  <p className="mt-1 text-sm text-white/70">{plan.description}</p>
-                </div>
-
-                <div className="flex flex-1 flex-col p-6">
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-4xl font-extrabold tracking-tight text-foreground">
-                      {formatINR(activePrice || 0)}
-                    </span>
-                    <span className="text-sm text-muted-foreground">/{cycle === 'yearly' ? 'year' : 'month'}</span>
-                  </div>
-                  {cycle === 'yearly' && yearly?.discountPercentage > 0 && (
-                    <p className="mt-1.5 text-xs font-semibold text-success-600">
-                      Save {yearly.discountPercentage}% vs monthly
-                    </p>
-                  )}
-
-                  <div className="my-5 inline-flex w-fit rounded-xl border border-border bg-surface p-1">
-                    {[
-                      { key: 'monthly', label: 'Monthly' },
-                      { key: 'yearly', label: 'Yearly' },
-                    ].map((opt) => (
-                      <button
-                        key={opt.key}
-                        type="button"
-                        onClick={() => setBillingCycle((c) => ({ ...c, [plan._id]: opt.key }))}
-                        className={`rounded-lg px-3.5 py-1.5 text-sm font-semibold transition ${
-                          cycle === opt.key
-                            ? 'bg-brand-600 text-white shadow-sm'
-                            : 'text-muted-foreground hover:bg-surface-2'
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
-
-                  <ul className="flex-1 space-y-2.5">
-                    {(plan.features || []).map((f) => (
-                      <li key={f} className="flex items-center gap-2.5 text-sm text-muted-foreground">
-                        <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-success-100 text-success-600">
-                          <Icon name="check" className="size-3" />
-                        </span>
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div className="mt-6">
-                    <button
-                      type="button"
-                      onClick={() => handlePurchase(plan)}
-                      disabled={processingId === plan._id || !monthly?.price}
-                      className={`inline-flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-bold text-white transition focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50 ${
-                        plan.highlight
-                          ? 'bg-gradient-to-r from-brand-600 to-brand-700 shadow-lg shadow-brand-600/30 hover:from-brand-700 hover:to-brand-800'
-                          : 'bg-foreground text-background hover:opacity-90'
-                      }`}
-                    >
-                      {processingId === plan._id ? 'Processing...' : `Choose ${plan.displayName || plan.name}`}
-                    </button>
-                    <p className="mt-2.5 text-center text-xs text-muted-foreground">
-                      {unlimited ? 'Unlimited members' : `Up to ${monthly?.memberLimit ?? 100} members`}
-                    </p>
-                  </div>
-                </div>
-              </div>
+                plan={plan}
+                billingCycle={globalBillingCycle}
+                isCurrentPlan={isCurrent}
+                processing={processingId === plan._id}
+                onSelect={handlePurchase}
+              />
             )
           })}
         </div>
       )}
 
-      <div className="mt-10">
+      {/* Payment History Section */}
+      <div className="pt-6">
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-foreground">Payment History</h2>
-            <p className="text-sm text-muted-foreground">Your subscription and payment records</p>
+            <h2 className="text-lg font-bold text-foreground">Payment History & Invoices</h2>
+            <p className="text-xs text-muted-foreground">
+              Official records of all subscription activations and Razorpay transactions
+            </p>
           </div>
           <Button
             variant="secondary"
@@ -276,7 +321,7 @@ export default function Payments() {
             disabled={history.items.length === 0}
           >
             <Icon name="download" className="size-4" />
-            Export
+            Export CSV
           </Button>
         </div>
 
@@ -289,8 +334,8 @@ export default function Payments() {
           pagination={history.pagination}
           onPageChange={setPage}
           emptyState={{
-            title: 'No payments yet',
-            message: 'Your payment history will appear here after you subscribe.',
+            title: 'No payments recorded',
+            message: 'Your payment history will appear here after you activate your subscription.',
           }}
         />
       </div>
