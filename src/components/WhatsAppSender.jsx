@@ -5,21 +5,22 @@ import { waLink } from '../utils/whatsapp'
 import { formatDate, daysUntil } from '../utils/format'
 
 const DEFAULT_TEMPLATES = {
-  welcome: 'Hi {{member}}, welcome to {{gym}}! Your {{plan}} membership is now active. We are excited to have you train with us.',
-  renewal: 'Hi {{member}}, a friendly reminder that your {{plan}} membership at {{gym}} ends on {{endDate}} ({{days}} day(s) left). Renew now to keep your workouts going.',
-  birthday: 'Happy Birthday {{member}}! Wishing you good health and happiness from everyone at {{gym}}.',
-  expiry: 'Hi {{member}}, your {{plan}} membership at {{gym}} expires on {{endDate}}. Extend today so you never miss a session.',
-  promo: 'Hi {{member}}, we have a special offer at {{gym}}. Contact us today to grab it before it expires.',
-  custom: '',
+  invoice: "Hello *{{member}}*! 💪\\n\\nThank you for training with *{{gym}}*. Here are your official payment receipt details:\\n\\n📄 Plan: *{{plan}}*\\n💰 Amount Paid: *₹{{amount}}*\\n📅 Validity: *{{startDate}} to {{endDate}}*\\n\\nKeep up the great workouts!\\nBest regards,\\n*{{gym}}*",
+  renewal: "Hi {{member}}, a friendly reminder that your {{plan}} membership at {{gym}} ends on {{endDate}} ({{days}} day(s) left). Renew now to keep your workouts going.",
+  birthday: "Happy Birthday {{member}}! Wishing you good health and happiness from everyone at {{gym}}.",
+  expiry: "Hi {{member}}, your {{plan}} membership at {{gym}} expires on {{endDate}}. Extend today so you never miss a session.",
+  promo: "Hi {{member}}, we have a special offer at {{gym}}. Contact us today to grab it before it expires.",
+  custom: "",
 }
 
 const TEMPLATE_OPTIONS = [
-  { value: 'renewal', label: 'Renewal reminder' },
-  { value: 'expiry', label: 'Expiry alert' },
-  { value: 'welcome', label: 'Welcome message' },
-  { value: 'birthday', label: 'Birthday wish' },
-  { value: 'promo', label: 'Promotional offer' },
-  { value: 'custom', label: 'Custom message' },
+  { value: "invoice", label: "Official Payment Receipt / Invoice" },
+  { value: "renewal", label: "Renewal reminder" },
+  { value: "expiry", label: "Expiry alert" },
+  { value: "welcome", label: "Welcome message" },
+  { value: "birthday", label: "Birthday wish" },
+  { value: "promo", label: "Promotional offer" },
+  { value: "custom", label: "Custom message" },
 ]
 
 const VARIABLES = ['{{member}}', '{{gym}}', '{{plan}}', '{{endDate}}', '{{days}}']
@@ -30,11 +31,13 @@ function fillTemplate(template, ctx) {
 
 function buildCtx(member, membership, gymName) {
   return {
-    member: member?.fullName || 'there',
+    member: member?.fullName || "there",
     gym: gymName,
-    plan: membership?.name || 'membership',
-    endDate: membership?.endDate ? formatDate(membership.endDate) : '',
-    days: membership?.endDate ? String(daysUntil(membership.endDate) ?? '') : '',
+    plan: membership?.name || "membership",
+    endDate: membership?.endDate ? formatDate(membership.endDate) : "",
+    startDate: membership?.startDate ? formatDate(membership.startDate) : "",
+    amount: membership?.price ? String(membership.price) : "",
+    days: membership?.endDate ? String(daysUntil(membership.endDate) ?? "") : "",
   }
 }
 
@@ -52,8 +55,8 @@ export default function WhatsAppSender({ open, onClose, member, membership, gymN
   useEffect(() => {
     if (!open) return
     const ctx = buildCtx(member, membership, gymName)
-    setTemplateKey('renewal')
-    setMessage(fillTemplate(DEFAULT_TEMPLATES.renewal, ctx))
+    setTemplateKey('invoice')
+    setMessage(fillTemplate(DEFAULT_TEMPLATES.invoice, ctx))
   }, [open, member, membership, gymName])
 
   const handleTemplateChange = (key) => {
@@ -66,7 +69,9 @@ export default function WhatsAppSender({ open, onClose, member, membership, gymN
 
   const handleSend = () => {
     if (!canSend) return
-    window.open(waLink(phone, message.trim()), '_blank', 'noopener,noreferrer')
+    const ctx = buildCtx(member, membership, gymName)
+    const finalMsg = fillTemplate(message, ctx).replace(/\{\{\w+\}\}/g, '').trim()
+    window.open(waLink(phone, finalMsg), '_blank', 'noopener,noreferrer')
     onClose?.()
   }
 

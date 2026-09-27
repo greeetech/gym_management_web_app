@@ -5,6 +5,8 @@ import { useOwnerSubscription } from '../hooks/useOwnerSubscription'
 import { useToast } from '../components/Toast'
 import { Alert, Avatar, Button, Card, Field, PageHeader, NativeSelect, inputClass } from '../components/ui'
 import { PlanUsageCard } from '../components/PlanUsage'
+import WhatsAppGatewayModal from '../components/WhatsAppGatewayModal'
+import { Icon } from '../components/icons'
 import { isValidEmail, isValidName } from '../utils/validation'
 
 const GENDERS = ['male', 'female', 'other']
@@ -23,6 +25,19 @@ export default function Settings() {
   const [errors, setErrors] = useState({})
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [qrModalOpen, setQrModalOpen] = useState(false)
+  const [gwStatus, setGwStatus] = useState('DISCONNECTED')
+  const [gwPhone, setGwPhone] = useState(null)
+
+  const checkGw = async () => {
+    try {
+      const res = await api.get('/whatsapp-gateway/status')
+      setGwStatus(res.data?.data?.status || 'DISCONNECTED')
+      if (res.data?.data?.phone) setGwPhone(res.data.data.phone)
+    } catch (_) {}
+  }
+
+  useState(() => { checkGw() })
 
   const set = (key) => (e) => {
     setForm((f) => ({ ...f, [key]: e.target.value }))
@@ -64,6 +79,56 @@ export default function Settings() {
       <div className="mb-6">
         <PlanUsageCard sub={sub.current} />
       </div>
+      <div className="mb-6">
+        <Card className="overflow-hidden">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border-subtle bg-surface-2/60 px-6 py-4">
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-success-500/10 text-success-600 dark:text-success-400">
+                <Icon name="message-circle" className="size-5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-foreground">WhatsApp Multi-Device Gateway</h3>
+                <p className="text-xs text-muted-foreground">Deliver official PDF invoices & receipts directly from your gym WhatsApp</p>
+              </div>
+            </div>
+
+            <div>
+              {gwStatus === 'CONNECTED' ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-success-50 px-3 py-1 text-xs font-semibold text-success-700 dark:bg-success-950/40 dark:text-success-300">
+                  <span className="size-2 rounded-full bg-success-500 animate-pulse" />
+                  Connected (+{gwPhone || 'Active'})
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-2 border border-border px-3 py-1 text-xs font-semibold text-muted-foreground">
+                  Not Linked
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="p-6 space-y-4">
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              When linked, our server uses in-memory dynamic PDF generation (Zero Cloudinary) to dispatch official PDF document attachments directly to member WhatsApp chats upon registration and renewal.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <Button onClick={() => setQrModalOpen(true)}>
+                <Icon name="qrcode" className="size-4" />
+                {gwStatus === 'CONNECTED' ? 'Manage WhatsApp Session' : 'Link WhatsApp (Scan QR)'}
+              </Button>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <WhatsAppGatewayModal
+        open={qrModalOpen}
+        onClose={() => {
+          setQrModalOpen(false)
+          checkGw()
+        }}
+      />
+
 
       <Card className="overflow-hidden">
         <div className="flex items-center gap-4 border-b border-border-subtle bg-surface-2/60 px-6 py-5">
