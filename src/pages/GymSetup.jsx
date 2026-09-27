@@ -246,7 +246,7 @@ function ImageInput({ field, value, onChange }) {
     setError('')
     try {
       const res = await uploadSetupImage(file, field.folder)
-      if (value.publicId) deleteSetupImage(value.publicId).catch(() => {})
+      if (value?.publicId) deleteSetupImage(value.publicId).catch(() => {})
       onChange(res)
     } catch (err) {
       setError(getErrorMessage(err, 'Upload failed'))

@@ -8,13 +8,15 @@ import axios from 'axios'
 const base = (import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || '').replace(/\/$/, '')
 const api = axios.create({
   baseURL: base ? `${base}/gym_owner` : '/gym_owner',
-  headers: { 'Content-Type': 'application/json' },
 })
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('gym_owner_token')
   if (token) {
     config.headers['x-auth-token'] = token
+  }
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type']
   }
   return config
 })

@@ -23,6 +23,7 @@ export function toggleSetupPublish(publish) {
 export function uploadSetupImage(file, folder) {
   const form = new FormData()
   form.append('file', file)
+  form.append('image', file)
   form.append('folder', folder || 'general')
   return api.post('/setup/upload', form).then((r) => r.data.data)
 }
