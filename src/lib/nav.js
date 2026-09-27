@@ -26,6 +26,8 @@ export const NAV_GROUPS = [
       { to: '/customization', label: 'Theme & Branding', icon: 'palette' },
       // { to: '/website', label: 'Website Builder', icon: 'globe' },
       { to: '/settings', label: 'Settings', icon: 'settings' },
+      { to: '/guide', label: 'How to Use & Tips', icon: 'book-open' },
+      { to: '/about', label: 'About Gym Manager', icon: 'info' },
     ],
   },
 ]
@@ -41,6 +43,9 @@ export const PAGE_TITLES = {
   '/setup': { title: 'Gym Setup', subtitle: 'Configure your gym business' },
   '/customization': { title: 'Theme & Branding', subtitle: 'Customize colors, typography and install PWA' },
   '/settings': { title: 'Settings', subtitle: 'Preferences, profile and plan' },
+  '/guide': { title: 'How to Use Gym Manager', subtitle: 'Step-by-step master walkthrough & pro tips' },
+  '/about': { title: 'About Gym Manager', subtitle: 'Intelligent gym management operating system' },
+  '/privacy-policy': { title: 'Privacy Policy & Data Security', subtitle: 'Data protection and security compliance' },
   // '/website': { title: 'Website Builder', subtitle: 'Build and publish your public site' },
 }
 

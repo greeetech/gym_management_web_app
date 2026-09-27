@@ -369,6 +369,18 @@ export default function Layout() {
               </Suspense>
             </motion.div>
           </AnimatePresence>
+        
+          {/* Global Footer */}
+          <footer className="mt-12 border-t border-border-subtle pt-6 pb-2 text-xs text-muted-foreground flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p>&copy; {new Date().getFullYear()} <strong>Gym Manager</strong>. All rights reserved.</p>
+            <div className="flex flex-wrap items-center gap-4">
+              <Link to="/guide" className="hover:text-foreground transition">How to Use</Link>
+              <span>&bull;</span>
+              <Link to="/about" className="hover:text-foreground transition">About</Link>
+              <span>&bull;</span>
+              <Link to="/privacy-policy" className="hover:text-foreground transition">Privacy Policy</Link>
+            </div>
+          </footer>
         </main>
       </div>
 

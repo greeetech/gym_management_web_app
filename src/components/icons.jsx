@@ -1,5 +1,7 @@
 import {
   Bell,
+  BookOpen,
+  Sparkles,
   CalendarClock,
   Check,
   CheckCircle2,
@@ -39,6 +41,8 @@ import {
 
 const ICONS = {
   bell: Bell,
+  'book-open': BookOpen,
+  sparkles: Sparkles,
   'calendar-clock': CalendarClock,
   check: Check,
   'check-circle': CheckCircle2,

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 
 export default function OnboardingChecklist({ plansCount, membersCount, activeCount }) {
   const steps = [
+    { label: 'Setup gym profile & logo', done: false, to: '/setup' },
     { label: 'Create a subscription plan', done: plansCount > 0, to: '/plans' },
     { label: 'Add your first member', done: membersCount > 0, to: '/members' },
     { label: 'Track renewals & expiries', done: activeCount > 0, to: '/memberships' },
@@ -9,7 +10,6 @@ export default function OnboardingChecklist({ plansCount, membersCount, activeCo
   const doneCount = steps.filter((s) => s.done).length
   const allDone = doneCount === steps.length
   if (allDone) return null
-
   const pct = Math.round((doneCount / steps.length) * 100)
 
   return (
@@ -32,9 +32,13 @@ export default function OnboardingChecklist({ plansCount, membersCount, activeCo
             <div className="h-full rounded-full bg-brand-gradient transition-all" style={{ width: `${pct}%` }} />
           </div>
         </div>
+        <Link to="/guide" className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline">
+          <span>View Step-by-Step Guide</span>
+          <span>&rarr;</span>
+        </Link>
       </div>
 
-      <div className="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+      <div className="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-4">
         {steps.map((step) => (
           <Link
             key={step.label}

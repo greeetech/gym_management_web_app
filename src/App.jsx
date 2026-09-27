@@ -23,6 +23,9 @@ const Customization = lazy(() => import('./pages/ThemeCustomization'))
 // const WebsiteBuilder = lazy(() => import('./pages/WebsiteBuilder'))
 const GymSite = lazy(() => import('./public/GymSite'))
 const Leads = lazy(() => import('./pages/Leads'))
+const Guide = lazy(() => import('./pages/Guide'))
+const About = lazy(() => import('./pages/About'))
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'))
 
 function PageLoader() {
   return (
@@ -39,6 +42,9 @@ function AppRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/g/:slug" element={<GymSite />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/guide" element={<Guide />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
         <Route
           path="/"
@@ -58,6 +64,9 @@ function AppRoutes() {
           <Route path="analytics" element={<Analytics />} />
           <Route path="settings" element={<Settings />} />
           <Route path="setup" element={<GymSetup />} />
+          <Route path="guide" element={<Guide />} />
+          <Route path="about" element={<About />} />
+          <Route path="privacy-policy" element={<PrivacyPolicy />} />
           <Route path="customization" element={<Customization />} />
           {/* <Route path="website" element={<WebsiteBuilder />} /> */}
           <Route path="leads" element={<Leads />} />
