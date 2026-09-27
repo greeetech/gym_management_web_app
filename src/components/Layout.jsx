@@ -355,7 +355,7 @@ export default function Layout() {
           </div>
         </header>
 
-        <main id="main-content" tabIndex={-1} className="mx-auto w-full max-w-7xl flex-1 p-4 pb-24 sm:p-6 lg:pb-8 lg:p-8">
+        <main id="main-content" tabIndex={-1} className="mx-auto w-full max-w-7xl flex-1 p-4 pb-28 sm:p-6 lg:pb-8 lg:p-8">
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
