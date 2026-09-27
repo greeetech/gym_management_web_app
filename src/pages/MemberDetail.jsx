@@ -11,6 +11,7 @@ import { Alert, Avatar, Button, Card, EmptyState, Field, PageHeader, inputClass 
 import { Icon } from '../components/icons'
 import { formatDate, formatINR } from '../utils/format'
 import WhatsAppSender from '../components/WhatsAppSender'
+import MemberInvoicesCard from '../components/MemberInvoicesCard'
 
 function DetailRow({ label, value }) {
   return (
@@ -168,6 +169,7 @@ export default function MemberDetail() {
 
         <div className="space-y-6 lg:col-span-2">
           <MembershipCard membership={membership} />
+          <MemberInvoicesCard memberId={member._id} memberPhone={member.phone} />
           <Card className="overflow-hidden">
             <div className="border-b border-border-subtle px-6 py-4">
               <h3 className="text-sm font-bold text-foreground">Quick actions</h3>
