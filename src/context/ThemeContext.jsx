@@ -1,4 +1,4 @@
-import { createContext, useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { APPEARANCE_STORAGE_KEY } from '../lib/utils'
 import { THEME_IDS } from '../lib/theme-presets'
 import { ThemeContext } from './theme-context'
