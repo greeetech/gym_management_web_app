@@ -1,0 +1,56 @@
+{
+  "name": "Gym Manager - Tenant Portal",
+  "short_name": "Gym Manager",
+  "description": "Smart Gym Management & Tenant Web Application",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090d16",
+  "theme_color": "#4f46e5",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Members",
+      "short_name": "Members",
+      "description": "Manage gym members",
+      "url": "/members",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "any"
+        }
+      ]
+    },
+    {
+      "name": "Leads",
+      "short_name": "Leads",
+      "description": "Manage leads",
+      "url": "/leads",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "any"
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "short_name": "Payments",
+      "description": "View payments and billing",
+      "url": "/payments",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "any"
+        }
+      ]
+    }
+  ]
+}

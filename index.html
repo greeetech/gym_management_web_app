@@ -9,6 +9,12 @@
       content="Manage your gym members, memberships, subscription plans, payments and analytics — all in one place."
     />
     <meta name="theme-color" content="#4f46e5" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Gym Manager" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
     <script>
       ;(function () {
         try {
@@ -37,5 +43,12 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+      <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('/sw.js').catch(function () {});
+        });
+      }
+    </script>
   </body>
 </html>

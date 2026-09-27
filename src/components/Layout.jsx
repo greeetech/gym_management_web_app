@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import { useOwnerSubscription } from '../hooks/useOwnerSubscription'
 import { PlanUsageCard } from './PlanUsage'
+import InstallPwaButton from './InstallPwaButton'
 import CommandPalette from './CommandPalette'
 import NotificationBell from './NotificationBell'
 import MobileNav from './MobileNav'
@@ -114,6 +115,7 @@ function SidebarFooter({ collapsed }) {
 
   return (
     <div className={cn('space-y-4 border-t border-sidebar/10 p-4', collapsed && 'flex flex-col items-center p-3')}>
+      <InstallPwaButton collapsed={collapsed} />
       <PlanUsageCard sub={sub.current} compact collapsed={collapsed} />
       {collapsed ? (
         <div className="flex flex-col items-center gap-2">
